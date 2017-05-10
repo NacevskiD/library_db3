@@ -19,13 +19,13 @@ public class LibraryGUI extends JFrame {
     private JLabel authorNameLabel;
     private JLabel libraryBooksLabel;
     private JButton deleteButton;
-    private JList<Books> borrowedBooksList;
+    private JList<BorrowedBooks> borrowedBooksList;
     private JScrollPane borrowedBooksScrollPane;
     private JButton borrowButton;
     private JLabel borrowedBooksLabel;
     private JButton returnButton;
     private DefaultListModel<Books> allBooksModel;
-    private DefaultListModel<Books> borrowedBooksModel;
+    private DefaultListModel<BorrowedBooks> borrowedBooksModel;
 
     private Controller controller;
 
@@ -44,7 +44,7 @@ public class LibraryGUI extends JFrame {
         allBooksModel = new DefaultListModel<Books>();
         allBooksList.setModel(allBooksModel);
 
-        borrowedBooksModel = new DefaultListModel<Books>();
+        borrowedBooksModel = new DefaultListModel<BorrowedBooks>();
         borrowedBooksList.setModel(borrowedBooksModel);
 
 
@@ -92,11 +92,14 @@ public class LibraryGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Books selectedBook = allBooksList.getSelectedValue();
+
                 if (selectedBook == null){
                     JOptionPane.showMessageDialog(LibraryGUI.this,"Please select a book to borrow");
                 }else {
-                    controller.borrow(selectedBook);
-                    ArrayList<Books> borrowedBooks = controller.getAllBorrowedInfo();
+                    JFrame frame = new JFrame();
+                    String name = JOptionPane.showInputDialog(frame,"Who borrowed the book?");
+                    controller.borrow(selectedBook,name,null);
+                    ArrayList<BorrowedBooks> borrowedBooks = controller.getAllBorrowedInfo();
                     setBorrowedListData( borrowedBooks);
                     ArrayList<Books> books = controller.getAllData();
                     setListData(books);
@@ -106,13 +109,13 @@ public class LibraryGUI extends JFrame {
         returnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Books selectedBook = borrowedBooksList.getSelectedValue();
+                BorrowedBooks selectedBook = borrowedBooksList.getSelectedValue();
                 if (selectedBook == null){
                     JOptionPane.showMessageDialog(LibraryGUI.this,"Please select a book to borrow");
                 }else {
                     controller.returnBook(selectedBook);
-                    ArrayList<Books> borrowedBooks = controller.getAllBorrowedInfo();
-                    setBorrowedListData( borrowedBooks);
+                    ArrayList<BorrowedBooks> borrowedBooks = controller.getAllBorrowedInfo();
+                    setBorrowedListData(borrowedBooks);
                     ArrayList<Books> books = controller.getAllData();
                     setListData(books);
                 }
@@ -128,11 +131,11 @@ public class LibraryGUI extends JFrame {
             allBooksModel.addElement(book);
         }
     }
-    void setBorrowedListData(ArrayList<Books> data){
+    void setBorrowedListData(ArrayList<BorrowedBooks> data){
         borrowedBooksModel.clear();
 
-        for (Books book : data){
-            borrowedBooksModel.addElement(book);
+        for (BorrowedBooks borrowedBook : data){
+            borrowedBooksModel.addElement(borrowedBook);
         }
     }
     private void addComponents() {
@@ -153,7 +156,7 @@ public class LibraryGUI extends JFrame {
         allBooksList = new JList<Books>();
         allBooksListScrollPane = new JScrollPane(allBooksList);
 
-        borrowedBooksList = new JList<Books>();
+        borrowedBooksList = new JList<BorrowedBooks>();
         borrowedBooksScrollPane = new JScrollPane(borrowedBooksList);
 
         //Create a JPanel to hold all of the above

@@ -1,6 +1,7 @@
 package com.david;
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.Date;
 
 /**
  * Created by David on 4/30/2017.
@@ -15,6 +16,7 @@ public class BookManager {
     private static final String Name_COL = "book_name";
     private static final String Author_COL = "author";
     private static final String BORROWED = "borrowed_books";
+    public static final String BORROWER = "borrower";
 
 
 
@@ -36,8 +38,8 @@ public class BookManager {
         try (Connection connection= DriverManager.getConnection(DB_CONNECTION_URL,user,password);
              Statement statement = connection.createStatement()){
             statement.execute("CREATE TABLE IF NOT EXISTS library_books(book_name VARCHAR(50),author VARCHAR(50))");
-            statement.execute("CREATE TABLE IF NOT EXISTS borrowed_books(book_name VARCHAR(50),author VARCHAR(50))");
-            String defaultInsert =  "INSERT INTO library_books VALUES (? , ?)";
+            statement.execute("CREATE TABLE IF NOT EXISTS borrowed_books(book_name VARCHAR(50),author VARCHAR(50),borrower VARCHAR(50))");
+            String defaultInsert =  "INSERT INTO library_books (book_name, author) VALUES (? , ?)";
             PreparedStatement psInsert = connection.prepareStatement(defaultInsert);
             psInsert.setString(1,"Java 101");
             psInsert.setString(2,"Kerry Fish");
@@ -95,8 +97,8 @@ public class BookManager {
         }
     }
 
-    ArrayList<Books> getAllBorrowedRecord(){
-        ArrayList<Books> allBorrowedRecords = new ArrayList<>();
+    ArrayList<BorrowedBooks> getAllBorrowedRecord(){
+        ArrayList<BorrowedBooks> allBorrowedRecords = new ArrayList<>();
         try (Connection conn= DriverManager.getConnection(DB_CONNECTION_URL,user,password);
              Statement statement = conn.createStatement()){
 
@@ -105,7 +107,9 @@ public class BookManager {
             while (rsBorrowed.next()){
                 String name = rsBorrowed.getString(Name_COL);
                 String author = rsBorrowed.getString(Author_COL);
-                Books borrowedBook = new Books(name,author);
+                String borrower = rsBorrowed.getString(BORROWER);
+                Date date = new Date();
+                BorrowedBooks borrowedBook = new BorrowedBooks(name,author,borrower);
                 allBorrowedRecords.add(borrowedBook);
             }
             rsBorrowed.close();
@@ -135,7 +139,7 @@ public class BookManager {
             sqle.printStackTrace();
         }
     }
-    void borrow(Books book){
+    void borrow(Books book,String name, BorrowedBooks bk){
         try(Connection connection= DriverManager.getConnection(DB_CONNECTION_URL,user,password)) {
             String deleteSQLTemplate = "DELETE FROM %s WHERE %s = ? AND %s = ?";
             String deleteSQL = String.format(deleteSQLTemplate,TABLE_NAME,Name_COL,Author_COL);
@@ -147,10 +151,11 @@ public class BookManager {
             deletePS.close();
 
 
-            String addBooks = "INSERT INTO " + BORROWED + " VALUES (?,?)";
+            String addBooks = "INSERT INTO " + BORROWED + " VALUES (?,?,?)";
             PreparedStatement addBooksPS = connection.prepareStatement(addBooks);
             addBooksPS.setString(1,book.name);
             addBooksPS.setString(2,book.author);
+            addBooksPS.setString(3,name);
             System.out.println(addBooksPS.toString());
             addBooksPS.execute();
 
@@ -162,13 +167,14 @@ public class BookManager {
             sqle.printStackTrace();
         }
     }
-    void returnBook (Books book){
+    void returnBook (BorrowedBooks book){
         try(Connection connection= DriverManager.getConnection(DB_CONNECTION_URL,user,password)) {
-            String deleteSQLTemplate = "DELETE FROM %s WHERE %s = ? AND %s = ?";
-            String deleteSQL = String.format(deleteSQLTemplate,BORROWED,Name_COL,Author_COL);
+            String deleteSQLTemplate = "DELETE FROM %s WHERE %s = ? AND %s = ? AND %s = ?";
+            String deleteSQL = String.format(deleteSQLTemplate,BORROWED,Name_COL,Author_COL,BORROWER);
             PreparedStatement deletePS = connection.prepareStatement(deleteSQL);
             deletePS.setString(1,book.name);
             deletePS.setString(2,book.author);
+            deletePS.setString(3,book.borrower);
             System.out.println(deletePS.toString());
             deletePS.execute();
             deletePS.close();

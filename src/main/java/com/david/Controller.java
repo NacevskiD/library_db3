@@ -16,7 +16,7 @@ public class Controller {
         db = new BookManager();
         db.createTable();
         ArrayList<Books> allData = db.getAllRecord();
-        ArrayList<Books> borrowedData = db.getAllBorrowedRecord();
+        ArrayList<BorrowedBooks> borrowedData = db.getAllBorrowedRecord();
         gui = new LibraryGUI(this);
         gui.setListData(allData);
         gui.setBorrowedListData(borrowedData);
@@ -24,7 +24,7 @@ public class Controller {
     ArrayList<Books> getAllData(){
         return db.getAllRecord();
     }
-    ArrayList<Books> getAllBorrowedInfo(){
+    ArrayList<BorrowedBooks> getAllBorrowedInfo(){
         return db.getAllBorrowedRecord();
     }
     void addRecordsToDatabase(Books books){
@@ -33,10 +33,10 @@ public class Controller {
     void delete (Books book){
         db.delete(book);
     }
-    void borrow (Books book){
-        db.borrow(book);
+    void borrow (Books book, String name,BorrowedBooks bk){
+        db.borrow(book,name,null);
     }
-    void returnBook (Books book){
+    void returnBook (BorrowedBooks book){
         db.returnBook(book);
     }
 }
