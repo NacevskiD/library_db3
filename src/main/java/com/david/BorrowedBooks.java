@@ -9,7 +9,7 @@ public class BorrowedBooks {
     String date;
     String borrower;
 
-    BorrowedBooks(String n, String a,String d,String b){
+    BorrowedBooks(String n, String a,String b,String d){
         name = n;
         author = a;
         date = d;
@@ -18,6 +18,6 @@ public class BorrowedBooks {
 
     @Override
     public String toString(){
-        return "Book name " + name + ", from author " + author + " borrowed by "  + borrower + " borrowed on " + date ;
+        return "Book name " + name + ", from author " + author + " borrowed by "  + borrower + ", borrowed on " + date ;
     }
 }

@@ -39,4 +39,7 @@ public class Controller {
     void returnBook (BorrowedBooks book){
         db.returnBook(book);
     }
+    void searchBook(String book){
+        db.searchBook(book);
+    }
 }

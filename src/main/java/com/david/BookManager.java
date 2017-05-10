@@ -1,5 +1,7 @@
 package com.david;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
@@ -19,7 +21,8 @@ public class BookManager {
     public static final String BORROWER = "borrower";
 
 
-
+    Date borrowDate = new Date();
+    Date returnDate = new Date();
 
 
     BookManager()  {
@@ -37,8 +40,8 @@ public class BookManager {
     public void createTable(){
         try (Connection connection= DriverManager.getConnection(DB_CONNECTION_URL,user,password);
              Statement statement = connection.createStatement()){
-            statement.execute("CREATE TABLE IF NOT EXISTS library_books(book_name VARCHAR(50),author VARCHAR(50))");
-            statement.execute("CREATE TABLE IF NOT EXISTS borrowed_books(book_name VARCHAR(50),author VARCHAR(50),borrower VARCHAR(50))");
+            statement.execute("CREATE TABLE IF NOT EXISTS library_books(book_name VARCHAR(50),author VARCHAR(50),date VARCHAR (50))");
+            statement.execute("CREATE TABLE IF NOT EXISTS borrowed_books(book_name VARCHAR(50),author VARCHAR(50),borrower VARCHAR(50), date VARCHAR(50) )");
             String defaultInsert =  "INSERT INTO library_books (book_name, author) VALUES (? , ?)";
             PreparedStatement psInsert = connection.prepareStatement(defaultInsert);
             psInsert.setString(1,"Java 101");
@@ -109,7 +112,7 @@ public class BookManager {
                 String author = rsBorrowed.getString(Author_COL);
                 String borrower = rsBorrowed.getString(BORROWER);
                 Date date = new Date();
-                BorrowedBooks borrowedBook = new BorrowedBooks(name,author,borrower);
+                BorrowedBooks borrowedBook = new BorrowedBooks(name,author,borrower,dateToString(date));
                 allBorrowedRecords.add(borrowedBook);
             }
             rsBorrowed.close();
@@ -151,11 +154,12 @@ public class BookManager {
             deletePS.close();
 
 
-            String addBooks = "INSERT INTO " + BORROWED + " VALUES (?,?,?)";
+            String addBooks = "INSERT INTO " + BORROWED + " VALUES (?,?,?,?)";
             PreparedStatement addBooksPS = connection.prepareStatement(addBooks);
             addBooksPS.setString(1,book.name);
             addBooksPS.setString(2,book.author);
             addBooksPS.setString(3,name);
+            addBooksPS.setString(4,dateToString(borrowDate));
             System.out.println(addBooksPS.toString());
             addBooksPS.execute();
 
@@ -180,10 +184,11 @@ public class BookManager {
             deletePS.close();
 
 
-            String addBooks = "INSERT INTO " + TABLE_NAME + " VALUES (?,?)";
+            String addBooks = "INSERT INTO " + TABLE_NAME + " VALUES (?,?,?)";
             PreparedStatement addBooksPS = connection.prepareStatement(addBooks);
             addBooksPS.setString(1,book.name);
             addBooksPS.setString(2,book.author);
+            addBooksPS.setString(3,dateToString(returnDate));
             System.out.println(addBooksPS.toString());
             addBooksPS.execute();
 
@@ -194,6 +199,20 @@ public class BookManager {
         catch (SQLException sqle){
             sqle.printStackTrace();
         }
+    }
+    void searchBook(String book){
+
+    }
+    String dateToString(Date date){
+        DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+
+
+        //Date date = Calendar.getInstance().getTime();
+
+        String reportDate = df.format(date);
+
+
+        return reportDate;
     }
 
 }

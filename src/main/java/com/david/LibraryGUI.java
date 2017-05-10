@@ -3,8 +3,10 @@ package com.david;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
+import java.util.Date;
 
 
 public class LibraryGUI extends JFrame {
@@ -24,6 +26,9 @@ public class LibraryGUI extends JFrame {
     private JButton borrowButton;
     private JLabel borrowedBooksLabel;
     private JButton returnButton;
+    private JTextField searchTextField;
+    private JLabel searchBooksLabel;
+    private JButton searchButton;
     private DefaultListModel<Books> allBooksModel;
     private DefaultListModel<BorrowedBooks> borrowedBooksModel;
 
@@ -63,7 +68,7 @@ public class LibraryGUI extends JFrame {
                     JOptionPane.showMessageDialog(LibraryGUI.this,"Enter the author of the book");
                     return;
                 }
-
+                Date date = new Date();
                 Books newBook = new Books(book,author);
                 controller.addRecordsToDatabase(newBook);
 
@@ -121,7 +126,21 @@ public class LibraryGUI extends JFrame {
                 }
             }
         });
+        /*searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            String search = searchTextField.getText();
+                if (search == null){
+                    JOptionPane.showMessageDialog(LibraryGUI.this,"Please enter a book name");
+                }
+                else {
+                    controller.searchBook(search);
+                    ArrayList<Books> books = controller
+                }
+            }
+        });*/
     }
+
     void setListData(ArrayList<Books> data) {
 
         //Display data in allDataTextArea
@@ -151,6 +170,9 @@ public class LibraryGUI extends JFrame {
         borrowButton = new JButton("Borrow Book");
         borrowedBooksLabel = new JLabel("Borrowed Books");
         returnButton = new JButton("Return Book");
+        //searchTextField = new JTextField();
+        //searchBooksLabel = new JLabel("Search by book name");
+        //searchButton = new JButton("Search");
 
         //and the JList, add it to a JScrollPane
         allBooksList = new JList<Books>();
@@ -173,6 +195,9 @@ public class LibraryGUI extends JFrame {
         mainPanel.add(authorNameLabel);
         mainPanel.add(enterAuthorName);
         mainPanel.add(addBooks);
+        //mainPanel.add(searchBooksLabel);
+        //mainPanel.add(searchTextField);
+       // mainPanel.add(searchButton);
         mainPanel.add(libraryBooksLabel);
         mainPanel.add(allBooksListScrollPane);
         mainPanel.add(borrowButton);
@@ -182,6 +207,17 @@ public class LibraryGUI extends JFrame {
         mainPanel.add(returnButton);
 
 
+    }
+    String dateToString(Date date){
+        DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+
+
+        //Date date = Calendar.getInstance().getTime();
+
+        String reportDate = df.format(date);
+
+
+        return reportDate;
     }
 
 }
