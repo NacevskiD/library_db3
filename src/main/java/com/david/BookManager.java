@@ -40,7 +40,7 @@ public class BookManager {
     public void createTable(){
         try (Connection connection= DriverManager.getConnection(DB_CONNECTION_URL,user,password);
              Statement statement = connection.createStatement()){
-            statement.execute("CREATE TABLE IF NOT EXISTS library_books(book_name VARCHAR(50),author VARCHAR(50),date VARCHAR (50))");
+            statement.execute("CREATE TABLE IF NOT EXISTS library_books(book_name VARCHAR(50),author VARCHAR(50))");
             statement.execute("CREATE TABLE IF NOT EXISTS borrowed_books(book_name VARCHAR(50),author VARCHAR(50),borrower VARCHAR(50), date VARCHAR(50) )");
             String defaultInsert =  "INSERT INTO library_books (book_name, author) VALUES (? , ?)";
             PreparedStatement psInsert = connection.prepareStatement(defaultInsert);
@@ -184,11 +184,10 @@ public class BookManager {
             deletePS.close();
 
 
-            String addBooks = "INSERT INTO " + TABLE_NAME + " VALUES (?,?,?)";
+            String addBooks = "INSERT INTO " + TABLE_NAME + " VALUES (?,?)";
             PreparedStatement addBooksPS = connection.prepareStatement(addBooks);
             addBooksPS.setString(1,book.name);
             addBooksPS.setString(2,book.author);
-            addBooksPS.setString(3,dateToString(returnDate));
             System.out.println(addBooksPS.toString());
             addBooksPS.execute();
 
